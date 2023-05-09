@@ -62,7 +62,9 @@
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
   align-items: center;
+  padding: 0 10px;
 }
+
 
 a {
   text-decoration: none;
@@ -81,7 +83,7 @@ img {
 }
 
 .details {
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .name {

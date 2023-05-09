@@ -6,7 +6,7 @@
         Profiles with more than 3 photos are 43% more likely to get a match. You can change these
         later.
         <br><br>
-        Note: First photo will be your primary photo.
+        Note: The first photo will be your primary photo.
       </p>
       <div class="image-box">
       <div v-for="(image, index) in images" :key="index" class="upload-btn-wrapper">
@@ -35,7 +35,6 @@ export default {
         return
       }
       const reader = new FileReader()
-      console.log(file)
       reader.onload = () => {
         this.images.splice(index, 1, reader.result)
       }

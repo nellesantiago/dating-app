@@ -91,7 +91,6 @@ const getUsersMatchId = async (fromId, toId, token, uid) => {
       headers: { 'Content-Type': 'application/json', token: token, uid: uid }
     }
   )
-  console.log(resp)
   return resp.data.data.allMatches[0].id
 }
 
@@ -161,7 +160,6 @@ const dislike = async (userId, token, uid) => {
       headers: { 'Content-Type': 'application/json', token: token, uid: uid }
     }
   )
-  console.log(resp)
   return resp.data.data.dislike
 }
 

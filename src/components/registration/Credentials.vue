@@ -63,7 +63,6 @@ export default {
         return new File([blob], `${user.firstName}Image${index}`, { type: blob.type })
       })
       user.image = newImage
-      console.log(user.image)
       const registered = await register(user, interests)
       if (registered.data.errors) {
         alert(registered.data.errors[0].message)

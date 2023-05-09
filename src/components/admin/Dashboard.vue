@@ -19,13 +19,17 @@
           </div>
         </div>
         <div class="right">
-          <button>View</button>
+          <button
+            @click="showViewModal = !showViewModal; reference = index">
+            View
+          </button>
           <button
             @click="showModal = !showModal; reference = index; this.user = user">
             Edit
           </button>
           <button @click="deleteAccount(user.id)">Delete</button>
         </div>
+
         <div v-if="showModal && reference == index" class="edit-modal">
           <div class="inner-modal">
             <div class="h2">Edit User</div>
@@ -68,6 +72,52 @@
             </form>
           </div>
         </div>
+
+        <div v-if="showViewModal && reference == index" class="view-modal">
+          <div class="inner-modal">
+            <div class="header">
+              <div class="h2">{{ user.fullName }}</div>
+              <button
+                  @click="showViewModal = !showViewModal; reference = 0">
+                  x
+                </button>
+            </div>
+            <div class="details-box">
+              <div class="basics">
+                <div class="gender ">
+                  <div v-if="user.gender == 'man'" class="man detail">
+                    <i class="fa-solid fa-mars"></i>Man
+                  </div>
+                  <div v-if="user.gender == 'woman'" class="woman detail">
+                    <i class="fa-solid fa-venus"></i>Woman
+                  </div>
+                  <div v-if="user.gender == 'nonbinary'" class="nonbinary detail">
+                    <i class="fa-solid fa-genderless"></i>Nonbinary
+                  </div>
+                </div>
+                <div class="birthdate detail"><i class="fa-solid fa-cake-candles"></i>{{ `${new Date(user.birthdate)
+              .toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}` }}</div>
+              <div class="email detail"><i class="fa-solid fa-envelope"></i>{{ user.email }}</div>
+              <div class="mobileNumber detail"><i class="fa-solid fa-mobile-screen"></i>{{ user.mobileNumber }}</div>
+                <div class="basic-location detail">
+                  <i class="fa-solid fa-location-dot"></i>{{ `${user.city}, ${user.region} ${user.country}` }}
+                </div>
+                <div v-if="user.school" class="school detail">
+                  <i class="fa-solid fa-graduation-cap"></i>{{ user.school }}
+                </div>
+                <div class="bio detail"><i class="fa-regular fa-note-sticky"></i>{{ user.bio }}</div>
+                <div class="detail"><i class="fa-solid fa-heart"></i>{{ `${user.matchesCount} ${pluralize('match', user.matchesCount)}` }}</div>
+              </div>
+              <div class="images">
+                <img v-for="(url, index) in user.imageUrl" :key="index" :src="`${url.url}`" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -80,6 +130,7 @@ export default {
     return {
       users: [],
       showModal: false,
+      showViewModal: false,
       reference: 0,
       user: {}
     }
@@ -100,7 +151,6 @@ export default {
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
       let data = await deleteUser(Number(id), uid, token)
-      console.log(data)
       this.getAllUsers()
     },
     async update() {
@@ -195,7 +245,8 @@ export default {
   background-color: rgb(172, 74, 74);
 }
 
-.edit-modal {
+.edit-modal,
+.view-modal {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.4);
   left: 0;
@@ -206,6 +257,36 @@ export default {
   align-items: center;
   height: 100vh;
   width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header button {
+background-color: black;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+
+.header .h2 {
+  margin: 0;
+}
+i {
+  font-size: 20px;
+
+}
+
+.detail {
+  display: grid;
+  grid-template-columns: 35px 300px;
+  margin: 5px 0;
 }
 
 .inner-modal {
@@ -222,6 +303,13 @@ export default {
   overflow: hidden;
 }
 
+.details-box {
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  margin-top: 20px;
+}
+
 form {
   display: flex;
   flex-direction: column;
@@ -232,11 +320,11 @@ label {
   display: flex !important;
   flex-direction: column;
   margin: 10px 0;
-  color: rgba(0, 0, 0, 0.7)
-
+  color: rgba(0, 0, 0, 0.7);
 }
 
-input, textarea {
+input,
+textarea {
   border: none;
   height: 40px;
   border-radius: 8px;
@@ -249,6 +337,23 @@ textarea {
   padding: 20px;
   height: 80px;
   resize: none !important;
+}
+
+.images {
+  display: flex;
+  width: 400px;
+  height: 220px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.images img {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  object-fit: cover;
+  border: 2px solid rgb(187, 187, 187);
 }
 
 .buttons {
@@ -266,12 +371,12 @@ textarea {
 }
 
 .buttons button:first-child {
-    background-color: #fed045;
-    color: black;
+  background-color: #fed045;
+  color: black;
 }
 
 .buttons button:nth-child(2) {
-background-color: black;
+  background-color: black;
 }
 
 nav button {
@@ -281,6 +386,7 @@ nav button {
   color: black;
   background: none;
   font-weight: 600;
-
 }
+
+
 </style>

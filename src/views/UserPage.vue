@@ -1,6 +1,6 @@
 <template>
   <div class="bg bg-user">
-    <img src="../assets/IMG_1084.PNG" class="black-logo">
+    <img src="../assets/IMG_1084-3.png" class="black-logo">
     <RouterView />
     <div class="nav">
       <RouterLink active-class="active" to="/user/profile"><i class="fa-solid fa-user"></i></RouterLink>

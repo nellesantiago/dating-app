@@ -102,7 +102,6 @@ export default {
     },
     getImage({ target: { files } }) {
       this.user.image = [...files]
-      console.log(this.user)
     }
   }
 }

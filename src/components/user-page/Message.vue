@@ -130,6 +130,7 @@ form {
   height: 80px;
   justify-content: center;
   align-items: center;
+  flex-direction: row;
 }
 
 input {

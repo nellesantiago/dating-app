@@ -1,57 +1,64 @@
 <template>
   <div class="bgs">
     <div class="box">
-      <div v-for="(user, index) in users" :key="index" class="image-box">
-        <div ref="top"></div>
-        <div class="first-image">
-          <img :src="`${user.imageUrl[0].url}`" />
-          <div class="details">
-            <div class="name">
-              {{ `${user.firstName}, ${user.age}` }}
-              <div class="gender">
-                <i v-if="user.gender == 'man'" class="fa-solid fa-mars"></i>
-                <i v-if="user.gender == 'woman'" class="fa-solid fa-venus"></i>
-                <i v-if="user.gender == 'nonbinary'" class="fa-solid fa-genderless"></i>
+      <div class="outer-box">
+        <div
+          v-for="(user, index) in queuedUser"
+          :key="index"
+          class="image-box"
+          :ref="setItemRef"
+          :data-id="`${user.id}`"
+        >
+          <div class="first-image">
+            <img v-if="user.imageUrl" :src="`${user.imageUrl[0].url}`" />
+            <div class="details">
+              <div class="name">
+                {{ `${user.firstName}, ${user.age}` }}
+                <div class="gender">
+                  <i v-if="user.gender == 'man'" class="fa-solid fa-mars"></i>
+                  <i v-if="user.gender == 'woman'" class="fa-solid fa-venus"></i>
+                  <i v-if="user.gender == 'nonbinary'" class="fa-solid fa-genderless"></i>
+                </div>
               </div>
+              <div class="location"><i class="fa-solid fa-location-dot"></i>{{ user.country }}</div>
             </div>
-            <div class="location"><i class="fa-solid fa-location-dot"></i>{{ user.country }}</div>
           </div>
-        </div>
-        <div class="basics">
-          <div class="basic-title">Basics</div>
-          <div class="fullname">
-            <i class="fa-regular fa-id-card"></i>{{ `${user.firstName} ${user.lastName}` }}
+          <div class="basics">
+            <div class="basic-title">Basics</div>
+            <div class="fullname">
+              <i class="fa-regular fa-id-card"></i>{{ `${user.firstName} ${user.lastName}` }}
+            </div>
+            <div class="basic-location">
+              <i class="fa-solid fa-house"></i>{{ `${user.city}, ${user.region}` }}
+            </div>
+            <div v-if="user.school" class="school">
+              <i class="fa-solid fa-graduation-cap"></i>{{ user.school }}
+            </div>
           </div>
-          <div class="basic-location">
-            <i class="fa-solid fa-house"></i>{{ `${user.city}, ${user.region}` }}
+          <div v-if="user.imageUrl && user.imageUrl[1]" class="second-image">
+            <img :src="`${user.imageUrl[1].url}`" />
           </div>
-          <div v-if="user.school" class="school">
-            <i class="fa-solid fa-graduation-cap"></i>{{ user.school }}
+          <div class="bio">
+            <div class="bio-title">About me</div>
+            <div class="span">{{ user.bio }}</div>
           </div>
-        </div>
-        <div v-if="user.imageUrl[1]" class="second-image">
-          <img :src="`${user.imageUrl[1].url}`" />
-        </div>
-        <div class="bio">
-          <div class="bio-title">About me</div>
-          <div class="span">{{ user.bio }}</div>
-        </div>
-        <div v-if="user.imageUrl[2]" class="third-image">
-          <img :src="`${user.imageUrl[2].url}`" />
-        </div>
-        <div v-if="user.imageUrl[3]" class="fourth-image">
-          <img :src="`${user.imageUrl[3].url}`" />
-        </div>
-        <div v-if="user.imageUrl[4]" class="fifth-image">
-          <img :src="`${user.imageUrl[4].url}`" />
-        </div>
-        <div class="options">
-          <button class="dislike-btn" @click="dislike(user.id)">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-          <button class="like-btn" @click="resolveLike(user.id)">
-            <i class="fa-solid fa-check"></i>
-          </button>
+          <div v-if="user.imageUrl && user.imageUrl[2]" class="third-image">
+            <img :src="`${user.imageUrl[2].url}`" />
+          </div>
+          <div v-if="user.imageUrl && user.imageUrl[3]" class="fourth-image">
+            <img :src="`${user.imageUrl[3].url}`" />
+          </div>
+          <div v-if="user.imageUrl && user.imageUrl[4]" class="fifth-image">
+            <img :src="`${user.imageUrl[4].url}`" />
+          </div>
+          <div class="options">
+            <button class="dislike-btn" @click="dislike(user.id)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <button class="like-btn" @click="resolveLike(user.id)">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -59,6 +66,7 @@
 </template>
 
 <script>
+import interact from 'interactjs'
 import { getFilteredUsers } from '../../utilities/users'
 import { like, dislike, likeCheck, likeBack, getUsersMatchId } from '../../utilities/matches'
 export default {
@@ -67,13 +75,21 @@ export default {
   },
   data() {
     return {
-      users: [],
       queuedUser: [],
-      //   first: 10,
-      skip: 0
+      skip: 0,
+      originX: 0,
+      originY: 0,
+      posX: 0,
+      posY: 0,
+      itemRefs: []
     }
   },
   methods: {
+    setItemRef(el) {
+      if (el) {
+        this.initInteract(el)
+      }
+    },
     async getUsers() {
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
@@ -89,10 +105,9 @@ export default {
       )
       if (users.length > 0) {
         this.queuedUser = users
-        this.users = [users[0]]
       } else {
         this.queuedUser = []
-        this.users = []
+        this.user = {}
       }
     },
     resolveGenderInterest(gender) {
@@ -105,23 +120,17 @@ export default {
           return 'women'
       }
     },
-    next() {
-      this.skip++
-      this.getUsers()
-    },
     async like(id) {
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
-      const response = await like(Number(id), token, uid)
-      console.log(response)
+      await like(Number(id), token, uid)
     },
     async dislike(id) {
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
-      const response = await dislike(Number(id), token, uid)
-      console.log(response)
+      await dislike(Number(id), token, uid)
       this.getUsers()
       this.$refs.top[0].scrollIntoView({ behavior: 'smooth' })
     },
@@ -134,12 +143,55 @@ export default {
         const matchId = await getUsersMatchId(Number(id), Number(user.id), token, uid)
         await likeBack(Number(matchId), token, uid)
         this.getUsers()
-        this.$refs.top[0].scrollIntoView({ behavior: 'smooth' })
       } else {
         await this.like(id)
         this.getUsers()
-        this.$refs.top[0].scrollIntoView({ behavior: 'smooth' })
       }
+    },
+    initInteract(selector) {
+      interact(selector).draggable({
+        inertia: true,
+        restrict: {
+          elementRect: { top: 0, left: 0, bottom: 0, right: 0 }
+        },
+        autoScroll: true,
+
+        onmove: this.dragMoveListener,
+        onend: this.onDragEnd
+      })
+
+      interact(selector).on({
+        down: this.clicked
+      })
+    },
+    dragMoveListener(e) {
+      let target = e.target,
+        x = (parseFloat(target.getAttribute('data-x')) || this.originX) + e.dx,
+        y = (parseFloat(target.getAttribute('data-y')) || this.originY) + e.dy
+
+      target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+      target.setAttribute('data-x', x)
+      target.setAttribute('data-y', y)
+    },
+    onDragEnd(e) {
+      let target = e.target
+      let id = target.dataset.id
+
+      if (target.getBoundingClientRect().left - this.posX > 150) {
+        this.resolveLike(id)
+      } else if (target.getBoundingClientRect().left - this.posX < -150) {
+        this.dislike(id)
+      } else {
+        target.style.webkitTransform = target.style.transform =
+          'translate(' + this.originX + 'px, ' + this.originY + 'px)'
+        target.setAttribute('data-x', this.originX)
+        target.setAttribute('data-y', this.originY)
+      }
+    },
+    clicked(e) {
+      let target = e.target
+      this.posX = target.getBoundingClientRect().left
+      this.posY = target.getBoundingClientRect().right
     }
   },
   watch: {
@@ -170,6 +222,24 @@ export default {
   overflow-x: hidden;
   overflow-y: scroll;
   border-radius: 20px;
+  position: relative;
+}
+
+.outer-box {
+  background-color: #fef7dd;
+  min-height: 630px;
+  max-height: 630px;
+  overflow: hidden;
+}
+
+.image-box {
+  position: absolute;
+  background-color: #fef7dd;
+  left: 0;
+  top: 0;
+  min-height: 630px;
+  max-height: 630px;
+  overflow: scroll;
 }
 
 .first-image {
