@@ -182,7 +182,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .user-box {
   padding: 50px;
 }
