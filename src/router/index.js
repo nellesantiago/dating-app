@@ -68,7 +68,7 @@ const router = createRouter({
         { path: 'chat', component: Chat, name: 'chat' },
         { path: 'matches', component: Match, name: 'matches' },
         { path: 'chat/:id', component: Message, name: 'message', props: true },
-        { path: 'settings', component: Settings, name: 'settings'}
+        { path: 'settings', component: Settings, name: 'settings' }
       ]
     },
     {
@@ -77,14 +77,59 @@ const router = createRouter({
       component: Admin,
       children: [
         {
-          path: 'login', component: Login, name: 'login-admin'
+          path: 'login',
+          component: Login,
+          name: 'login-admin'
         },
         {
-          path: 'dashboard', component: Dashboard, name: 'dashboard'
+          path: 'dashboard',
+          component: Dashboard,
+          name: 'dashboard'
         }
       ]
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  const user = localStorage.getItem('user')
+  if (to.fullPath === '/admin/dashboard') {
+    if (!token || !user) {
+      next('/admin/login')
+    }
+  }
+  if (to.fullPath === '/user/feed') {
+    if (!token || !user) {
+      next('/')
+    }
+  }
+  if (to.fullPath === '/user/profile') {
+    if (!token || !user) {
+      next('/')
+    }
+  }
+  if (to.fullPath === '/user/matches') {
+    if (!token || !user) {
+      next('/')
+    }
+  }
+  if (to.fullPath === '/user/chat') {
+    if (!token || !user) {
+      next('/')
+    }
+  }
+  if (to.fullPath === '/user/settings') {
+    if (!token || !user) {
+      next('/')
+    }
+  }
+  if (to.name === 'message') {
+    if (!token || !user) {
+      next('/')
+    }
+  }
+  next()
 })
 
 export default router
