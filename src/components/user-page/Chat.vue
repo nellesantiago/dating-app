@@ -104,7 +104,7 @@ img {
   color: black;
   opacity: 0.7;
   text-align: center;
-  max-width: 50px;
+  max-width: 60px;
 }
 </style>
 <script>

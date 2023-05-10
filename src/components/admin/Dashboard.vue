@@ -117,18 +117,24 @@
       </div>
     </div>
   </div>
+  <Spinner v-if="isLoading"/>
 </template>
 
 <script>
 import { getUsers, deleteUser, updateUser } from '../../utilities/users'
+import Spinner from '../admin/Spinner.vue'
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
       users: [],
       showModal: false,
       showViewModal: false,
       reference: 0,
-      user: {}
+      user: {},
+      isLoading: false
     }
   },
   created() {
@@ -143,11 +149,13 @@ export default {
       this.users = users
     },
     async deleteAccount(id) {
+      this.isLoading = true
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
-      let data = await deleteUser(Number(id), uid, token)
+      await deleteUser(Number(id), uid, token)
       this.getAllUsers()
+      this.isLoading = false
     },
     async update() {
       let token = localStorage.getItem('token')
