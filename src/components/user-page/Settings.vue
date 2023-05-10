@@ -52,15 +52,21 @@
       </form>
     </div>
   </div>
+  <Spinner v-if="isLoading"/>
 </template>
 
 <script>
 import { getUser, updateUser, imageDelete, deleteUser } from '../../utilities/users'
+import Spinner from '../Spinner.vue'
 
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
-      user: {}
+      user: {},
+      isLoading: false
     }
   },
   created() {
@@ -75,6 +81,7 @@ export default {
       this.user = userData
     },
     async submit() {
+      this.isLoading = true
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
@@ -84,6 +91,7 @@ export default {
       } else {
         this.$router.push('/user/profile')
       }
+      this.isLoading = false
     },
     async deleteImage(id) {
       let token = localStorage.getItem('token')

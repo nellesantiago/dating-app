@@ -35,19 +35,26 @@
     </div>
     <RouterLink to="/">Back to home</RouterLink>
   </div>
+  <Spinner v-if="isLoading" />
 </template>
 
 <script>
+import Spinner from '../components/Spinner.vue'
 import { login } from '../utilities/login'
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      isLoading: false
     }
   },
   methods: {
     async submit() {
+      this.isLoading = true
       const data = await login(this.email, this.password)
       if (
         data &&
@@ -61,6 +68,7 @@ export default {
       } else {
         alert('Invalid email or password')
       }
+      this.isLoading = false
     }
   }
 }

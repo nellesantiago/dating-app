@@ -28,22 +28,29 @@
           v-model="password"
         />
       </div>
-      <button type="submit" class="btn btn-dark" @click.prevent="submit" >Submit</button>
+      <button type="submit" class="btn btn-dark" @click.prevent="submit">Submit</button>
     </form>
   </div>
+  <Spinner v-if="isLoading" />
 </template>
 
 <script>
 import { login } from '../../utilities/login'
+import Spinner from '../admin/Spinner.vue'
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      isLoading: false
     }
   },
   methods: {
     async submit() {
+      this.isLoading = true
       const data = await login(this.email, this.password)
       if (
         data &&
@@ -53,9 +60,11 @@ export default {
       ) {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
+        this.isLoading = false
         this.$router.push('/admin/dashboard')
       } else {
         alert('Invalid email or password')
+        this.isLoading = false
       }
     }
   }
@@ -63,6 +72,9 @@ export default {
 </script>
 
 <style scoped>
+
+
+
 button {
   text-align: center;
   font-size: 14px;

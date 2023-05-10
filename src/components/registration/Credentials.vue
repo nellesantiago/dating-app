@@ -10,7 +10,7 @@
         </label>
         <label for="mobileNumber"
           >Mobile number:
-          <input type="text" id="mobileNumber" v-model="mobileNumber" placeholder="xxxxxxxxxxx" />
+          <input type="text" id="mobileNumber" v-model="mobileNumber" placeholder="09xxxxxxxxx" />
         </label>
         <label for="password"
           >Password:
@@ -26,18 +26,24 @@
     </div>
     <button :disabled="!isFormValid" @click.prevent="submit">✓</button>
   </div>
+  <Spinner v-if="isLoading" />
 </template>
 
 <script>
+import Spinner from '../Spinner.vue'
 import { register } from '../../utilities/register'
 import { login } from '../../utilities/login'
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
       email: '',
       password: '',
       mobileNumber: '',
-      error: ''
+      error: '',
+      isLoading: false
     }
   },
   methods: {
@@ -50,6 +56,7 @@ export default {
       }
     },
     async submit() {
+      this.isLoading = true
       if (this.error) {
         return
       }
@@ -75,6 +82,7 @@ export default {
         localStorage.setItem('user', JSON.stringify(data.user))
         this.$router.push('/register/success')
       }
+      this.isLoading = false
     },
     dataURItoBlob(dataURI) {
       var byteString = atob(dataURI.split(',')[1])

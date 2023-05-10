@@ -10,6 +10,7 @@
           <div class="gender">
             <i v-if="user.gender == 'man'" class="fa-solid fa-mars"></i>
             <i v-if="user.gender == 'woman'" class="fa-solid fa-venus"></i>
+            <i v-if="user.gender == 'nonbinary'" class="fa-solid fa-genderless"></i>
           </div>
         </div>
         <!-- <RouterLink :to="`/user/chat/2`">
@@ -40,6 +41,7 @@
       </div>
     </div>
   </div>
+  <Spinner v-if="isLoading"/>
 </template>
 
 <style scoped>
@@ -169,6 +171,11 @@ img {
   color: rgb(218, 105, 123);
 }
 
+.gender .fa-genderless {
+  font-size: 16px;
+  color: rgb(89, 228, 180);
+}
+
 .chat-btn {
   font-size: 12px;
   text-align: center;
@@ -194,17 +201,23 @@ a {
   text-decoration: none;
 }
 </style>
+
 <script>
 import { getMatchedUsers } from '../../utilities/users'
 import { getUsersMatchId } from '../../utilities/matches'
 import { createMessage } from '../../utilities/messages'
+import Spinner from '../Spinner.vue'
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
       users: [],
       showModal: false,
       reference: '',
-      content: ''
+      content: '',
+      isLoading: false
     }
   },
   created() {
@@ -219,12 +232,14 @@ export default {
       this.users = users
     },
     async send(id) {
+      this.isLoading = true
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
       let matchId = await getUsersMatchId(Number(id), Number(user.id), token, uid)
       await createMessage(Number(user.id), Number(matchId), this.content, token, uid)
       this.content = ''
+      this.isLoading = false
       this.$router.push(`/user/chat/${matchId}`)
     }
   }
