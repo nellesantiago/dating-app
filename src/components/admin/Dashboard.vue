@@ -47,10 +47,6 @@
                 <input type="email" v-model="user.email" />
               </label>
               <label>
-                Password (leave blank if you don't want to change it)
-                <input type="password" v-model="user.password" />
-              </label>
-              <label>
                 Mobile Number
                 <input type="string" v-model="user.mobileNumber" />
               </label>
