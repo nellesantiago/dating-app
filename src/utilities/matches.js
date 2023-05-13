@@ -49,6 +49,7 @@ const getMatch = async (matchId, token, uid) => {
             }) {
                 name
                 users {
+                    id
                     fullName
                     firstName
                     imageUrl {

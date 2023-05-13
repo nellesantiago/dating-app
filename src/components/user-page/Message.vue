@@ -197,9 +197,9 @@ export default {
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
       let match = await getMatch(Number(this.id), token, uid)
-      this.name = match.name
       this.users = match.users
       this.user = user
+      this.name = this.otherUserFullName(this.user)
     },
     getSenderImage(name) {
       let arr = this.users.filter((user) => user.fullName == name)
@@ -216,6 +216,10 @@ export default {
       } else {
         return ''
       }
+    },
+    otherUserFullName(user) {
+      let otherUser = this.users.filter((i) => i.id != user.id)
+      return otherUser[0].fullName
     }
   },
   watch: {
