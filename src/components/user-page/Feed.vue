@@ -132,7 +132,6 @@ export default {
       let uid = Number(user.id)
       await dislike(Number(id), token, uid)
       this.getUsers()
-      this.$refs.top[0].scrollIntoView({ behavior: 'smooth' })
     },
     async resolveLike(id) {
       let token = localStorage.getItem('token')
@@ -149,20 +148,22 @@ export default {
       }
     },
     initInteract(selector) {
-      interact(selector).draggable({
-        inertia: true,
-        restrict: {
-          elementRect: { top: 0, left: 0, bottom: 0, right: 0 }
-        },
-        autoScroll: true,
+      if (!interact.isSet(selector)){
+        interact(selector).draggable({
+          inertia: true,
+          restrict: {
+            elementRect: { top: 0, left: 0, bottom: 0, right: 0 }
+          },
+          autoScroll: true,
+  
+          onmove: this.dragMoveListener,
+          onend: this.onDragEnd
 
-        onmove: this.dragMoveListener,
-        onend: this.onDragEnd
-      })
-
-      interact(selector).on({
-        down: this.clicked
-      })
+        })
+        interact(selector).on({
+          down: this.clicked
+        })
+      }
     },
     dragMoveListener(e) {
       let target = e.target,

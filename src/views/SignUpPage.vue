@@ -25,7 +25,6 @@ export default {
       );
       if (registered) {
         var data = await login(this.email, this.password);
-        console.log(data);
       }
       if (
         data &&
