@@ -225,11 +225,13 @@ export default {
   },
   methods: {
     async getUsers() {
+      this.isLoading = true
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
       const users = await getMatchedUsers(Number(user.id), token, uid)
       this.users = users
+      this.isLoading = false
     },
     async send(id) {
       this.isLoading = true

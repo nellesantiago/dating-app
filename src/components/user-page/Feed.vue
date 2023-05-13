@@ -63,13 +63,18 @@
       </div>
     </div>
   </div>
+  <Spinner v-if="isLoading" />
 </template>
 
 <script>
 import interact from 'interactjs'
 import { getFilteredUsers } from '../../utilities/users'
 import { like, dislike, likeCheck, likeBack, getUsersMatchId } from '../../utilities/matches'
+import Spinner from '../Spinner.vue'
 export default {
+  components: {
+    Spinner
+  },
   created() {
     this.getUsers()
   },
@@ -81,7 +86,8 @@ export default {
       originY: 0,
       posX: 0,
       posY: 0,
-      itemRefs: []
+      itemRefs: [],
+      isLoading: false
     }
   },
   methods: {
@@ -91,6 +97,7 @@ export default {
       }
     },
     async getUsers() {
+      this.isLoading = true
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
@@ -109,6 +116,7 @@ export default {
         this.queuedUser = []
         this.user = {}
       }
+      this.isLoading = false
     },
     resolveGenderInterest(gender) {
       switch (gender) {
@@ -127,13 +135,16 @@ export default {
       await like(Number(id), token, uid)
     },
     async dislike(id) {
+      this.isLoading = true
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
       await dislike(Number(id), token, uid)
       this.getUsers()
+      this.isLoading = false
     },
     async resolveLike(id) {
+      this.isLoading = true
       let token = localStorage.getItem('token')
       let user = JSON.parse(localStorage.getItem('user'))
       let uid = Number(user.id)
@@ -146,19 +157,19 @@ export default {
         await this.like(id)
         this.getUsers()
       }
+      this.isLoading = false
     },
     initInteract(selector) {
-      if (!interact.isSet(selector)){
+      if (!interact.isSet(selector)) {
         interact(selector).draggable({
           inertia: true,
           restrict: {
             elementRect: { top: 0, left: 0, bottom: 0, right: 0 }
           },
           autoScroll: true,
-  
+
           onmove: this.dragMoveListener,
           onend: this.onDragEnd
-
         })
         interact(selector).on({
           down: this.clicked
@@ -177,6 +188,7 @@ export default {
     onDragEnd(e) {
       let target = e.target
       let id = target.dataset.id
+      console.log('dragLike')
 
       if (target.getBoundingClientRect().left - this.posX > 150) {
         this.resolveLike(id)
